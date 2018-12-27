@@ -47,3 +47,16 @@ class SoftmaxBody(nn.Module):
         probs = F.softmax(outputs * self.T)
         action = probs.multinomial(num_samples=1)
         return action
+
+class AI:
+
+    def __init__(self, brain, body):
+        self.brain = brain
+        self.body = body
+
+    def __call__(self, inputs):
+        input = Variable(torch.from_numpy(np.array(inputs, dtype=float32)))
+        output = self.brain(input)
+        actions = self.body(output)
+        return actions.data.numpy()
+

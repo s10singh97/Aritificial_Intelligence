@@ -36,3 +36,14 @@ class CNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
+
+class SoftmaxBody(nn.Module):
+
+    def __init__(self, T):
+        super(SoftmaxBody, self).__init__()
+        self.T = T
+
+    def forward(self, outputs):
+        probs = F.softmax(outputs * self.T)
+        action = probs.multinomial(num_samples=1)
+        return action

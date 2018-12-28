@@ -110,3 +110,27 @@ class MA:
         return np.mean(self.list_of_rewards)
 ma = MA(100)
 
+# Training the AI
+loss = nn.MSELoss()
+optimizer = optim.Adam(cnn.parameters(), lr=0.001)
+nb_epochs = 100
+for epoch in range(1, nb_epochs + 1):
+    memory.run_steps(200)
+    for batch in memory.sample_batch(128):
+        inputs, targets = eligibility_trace(batch)
+        inputs, targets = Variable(inputs), Variable(targets)
+        predictions = cnn(inputs)
+        loss_error = loss(predictions, targets)
+        optimizer.zero_grad()
+        loss_error.backward()
+        optimizer.step()
+    rewards_steps = n_steps.rewards_steps()
+    ma.add(rewards_steps)
+    avg_reward = ma.average()
+    print("Epoch: %s, Average Reward: %s" % (str(epoch), str(avg_reward)))
+    if avg_reward >= 1500:
+        print("Congratulations, your AI wins")
+        break
+
+# Closing the Doom environment
+doom_env.close()
